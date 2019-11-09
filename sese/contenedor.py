@@ -8,8 +8,8 @@ class NoHayItems(Exception):
     items para completar un pedido.
     """
 
-    def __init__(self, msg: str) -> None:
-        super().__init__(self, msg)
+    def __init__(self, *args) -> None:
+        super().__init__(*args)
 
 
 class Item:
@@ -86,7 +86,11 @@ class ArchivoTareas:
     def generar_tareas(self, almacen: Almacen, pedido: Tuple[Item],
                        i_pedido: int) -> None:
         if not self.es_posible(almacen, pedido):
-            raise NoHayItems(f"No se pudo completar el pedido: {pedido}")
+            msg = "No se pudo completar el pedido:\n"
+            for item in pedido:
+                msg += str(item)
+                msg += '\n'
+            raise NoHayItems(msg)
 
         # Itera cada item del pedido
         for item_pedido in pedido:
