@@ -4,7 +4,7 @@ import argparse
 def cargar_argumentos() -> dict:
     # Inicializacion del parser de argumentos y sus opciones
     argparser = argparse.ArgumentParser(
-        prog="asistente-sese",
+        prog="jotason",
         description="El asistente diseñado para Sesé en la ImagineCode 2019.")
 
     # Creación de los argumentos del programa

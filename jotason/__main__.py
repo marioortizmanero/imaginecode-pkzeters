@@ -1,8 +1,8 @@
 import logging
 
-from sese.contenedor import Almacen, ArchivoTareas, NoHayItems
-from sese.asistente import Asistente
-from sese.config import cargar_argumentos
+from jotason.contenedor import Almacen, ArchivoTareas, NoHayItems
+from jotason.asistente import Asistente
+from jotason.config import cargar_argumentos
 
 
 def main():

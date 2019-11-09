@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 
 setup(
-    name='sese',
+    name='jotason',
     version='1.0',
     packages=find_packages(),
     python_requires='>=3.6',
@@ -17,6 +17,6 @@ setup(
         'pyaudio'
     ],
     entry_points={
-        'console_scripts': ['sese = sese.__main__:main']
+        'console_scripts': ['jotason = jotason.__main__:main']
     }
 )

@@ -2,7 +2,7 @@ import random
 import logging
 from typing import Tuple
 
-from sese.contenedor import Tarea
+from jotason.contenedor import Tarea
 
 # Reconocimiento de voz
 import speech_recognition as sr
@@ -40,10 +40,10 @@ class Interfaz:
         """
         Leer los mensajes de un archivo especial para almacenarlos.
         Tienen una sintaxis simple: cada mensaje es una línea nueva.
-        El archivo sólo tiene su nombre dentro de sese/dialogos/.
+        El archivo sólo tiene su nombre dentro de jotason/dialogos/.
         """
 
-        with open(f"sese/dialogos/{archivo}", 'r') as f:
+        with open(f"jotason/dialogos/{archivo}", 'r') as f:
             mensajes = f.readlines()
         # Elimina espacios extra y los saltos de línea
         mensajes = [x.strip().rstrip('\n') for x in mensajes]
