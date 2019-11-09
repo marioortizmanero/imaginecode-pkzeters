@@ -1,13 +1,13 @@
 {
     "items": [
         { 
-          "papeles": 3,
-          "bolis": 1
+          "papel": 3,
+          "boli": 1
         },
-        { "cantimploras": 2,
-          "vasos": 4 },
-        { "vasos": 2,
-          "bolis": 1,
-          "papeles": 1 }
+        { "cantimplora": 2,
+          "vaso": 4 },
+        { "vaso": 2,
+          "boli": 1,
+          "papel": 1 }
     ]
 }

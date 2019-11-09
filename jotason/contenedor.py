@@ -17,8 +17,22 @@ class Item:
         self.nombre = nombre
         self.cantidad = cantidad
 
+    @property
+    def nombre_concordado(self):
+        """
+        El nombre automáticamente se convierte de singular a plural.
+        """
+
+        if self.cantidad == 1:
+            return self.nombre
+        else:
+            if self.nombre[-1] in 'aeiouáéíóú':
+                return self.nombre + 's'
+            else:
+                return self.nombre + 'es'
+
     def __str__(self) -> str:
-        return f'{self.nombre}: {self.cantidad}'
+        return f'{self.nombre_concordado}: {self.cantidad}'
 
 
 class Almacen:

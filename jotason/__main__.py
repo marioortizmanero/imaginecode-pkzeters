@@ -38,7 +38,7 @@ def loop_asistente(config: dict):
             try:
                 tareas.generar_tareas(almacen, pedido, i_pedido)
             except NoHayItems as e:
-                logging.info(str(e))
+                print(e)
 
         tareas.escribir(config.archivo_tareas)
 
@@ -69,6 +69,18 @@ def loop_asistente(config: dict):
         except KeyboardInterrupt:
             asistente.hablar(asistente.interfaz_despedir)
             print()
+            break
+
+        if archivo_almacen not in (None, ''):
+            config.archivo_almacen = archivo_almacen
+        else:
+            config.archivo_almacen = config.archivo_final
+
+        if archivo_pedidos not in (None, ''):
+            config.archivo_almacen = archivo_almacen
+        else:
+            print("No se especificó un archivo de pedidos nuevo.")
+            asistente.hablar(asistente.interfaz_despedir)
             break
 
 

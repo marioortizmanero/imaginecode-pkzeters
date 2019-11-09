@@ -108,7 +108,7 @@ class Asistente:
 
         for palabra in reconocido.split():
             for keyword in keywords:
-                if palabra == keyword:
+                if palabra.lower() == keyword.lower():
                     return True
 
         return False
@@ -159,8 +159,12 @@ class Asistente:
             * 1: tarea.final
             * 2: tarea.item.nombre
             * 3: tarea.item.cantidad
+
+        El formato del mensaje se asegurará de que el plural sea concorde
+        a su cantidad. También hay que tener en cuenta que el sintetizador
+        dirá 'uno' en vez de 'un' si la cantidad es 1.
         """
 
         self._hablar(self.interfaz_tareas.msg_aleatorio(
-            tarea.inicio + 1, tarea.final + 1, tarea.item.nombre,
-            tarea.item.cantidad))
+            tarea.inicio + 1, tarea.final + 1, tarea.item.nombre_concordado,
+            'un' if tarea.item.cantidad == 1 else tarea.item.cantidad))
