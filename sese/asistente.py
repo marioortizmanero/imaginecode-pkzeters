@@ -21,10 +21,11 @@ class Asistente:
         self.interfaz_msg_final = InterfazMsgFinal()
 
         # Keywords para acciones especiales
-        self.keys_repite = ('repite', 'repetido', 'otra vez', 'qué?',
+        self.keys_repite = ('repite', 'repetido', 'otra', 'qué?',
                             'repítelo')
         self.keys_siguiente = ('avanzar', 'terminado', 'hecho', 'acabado',
-                               'ya está', 'co')
+                               'ya', 'está', 'finalizado', 'acabé', 'terminé',
+                               'finalicé')
 
         # Inicializacion del reconocimiento de voz
         self.recognizer = sr.Recognizer()
@@ -49,24 +50,30 @@ class Asistente:
 
         return False
 
-    def escuchar(self) -> None:
-        with sr.Microphone() as fuente:
-            audio = self.recognizer.listen(fuente)
+    def escuchar(self, tarea: Tarea) -> None:
+        """
+        Loop que espera a recibir una de las keywords para actual acorde a
+        ella.
+        """
 
-        try:
-            recognized = self.recognizer.recognize_google(
-                audio, language='es-ES')
-            print("PALABRA:", recognized)
-            if self.buscar_keyword(recognized, self.keys_repite):
-                print("Holiwi")
-                return
-            elif self.buscar_keyword(recognized, self.keys_siguiente):
-                print("Holiwi2")
-                return
-        except sr.UnknownValueError:
-            print("Could not understand audio")
-        except sr.RequestError as e:
-            print("Could not request results; {0}".format(e))
+        while True:
+            with sr.Microphone() as fuente:
+                audio = self.recognizer.listen(fuente)
+
+            try:
+                recognized = self.recognizer.recognize_google(
+                    audio, language='es-ES')
+                print("PALABRA:", recognized)
+                if self.buscar_keyword(recognized, self.keys_repite):
+                    # Repite la tarea y continúa el bucle esperando
+                    self.hablar_tarea(tarea)
+                elif self.buscar_keyword(recognized, self.keys_siguiente):
+                    # Si ya ha acabado se termina la función directamente
+                    return
+            except sr.UnknownValueError:
+                print("No se pudo entender el audio")
+            except sr.RequestError as e:
+                print(f"No se pudieron obtener resultados: {e}")
 
     def hablar_msg_final(self) -> None:
         """

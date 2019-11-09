@@ -37,7 +37,7 @@ def main():
     asistente = Asistente()
     for tarea in tareas:
         asistente.hablar_tarea(tarea)
-        asistente.escuchar()
+        asistente.escuchar(tarea)
         asistente.hablar_msg_final()
 
 
