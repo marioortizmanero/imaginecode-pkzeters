@@ -120,9 +120,14 @@ class Asistente:
         """
 
         logging.info("Se ha iniciado el bucle de una tarea.")
+        calibrado = False
         while True:
             with sr.Microphone() as fuente:
-                audio = self.recognizer.listen(fuente)
+                if not calibrado:
+                    # Calibra el ruido del micrófono sólo la primera vez
+                    self.recognizer.adjust_for_ambient_noise(fuente)
+                    calibrado = True
+                audio = self.recognizer.listen(fuente, timeout=5)
 
             try:
                 recognized = self.recognizer.recognize_google(
