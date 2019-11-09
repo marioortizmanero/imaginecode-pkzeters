@@ -48,7 +48,27 @@ class Tarea:
                 for item_disponible in estanteria:
                     # Se mueven los items del almacén requeridos a los del
                     # pedido.
-                    if item_disponible.nombre == item.nombre:
+                    if item_disponible.nombre == item_pedido.nombre:
+                        if item_pedido.cantidad >= item_disponible.cantidad: 
+                            #si en el contendor no hay suficientes o estan justas
+                            #me llevo todo lo que puedo
+                            item_pedido.cantidad -= item_disponible.cantidad
+                            del item_disponible
+                            if item_pedido.cantidad == 0:
+                                #si estaban justas dejo de buscar
+                                del item_pedido
+                                break                        
+
+                        else :
+                            #en la estanteria hay de sobra para el pedido
+                            item_disponible.cantidad -= item_pedido.cantidad
+                            del item_pedido
+                            #disminuimos la cantidad en el almacen y eliminamos el item del pedido
+                            break
+
+
+
+
 
 
     def se_puede(self, almacen: Almacen, pedido: Tuple[Item]):
