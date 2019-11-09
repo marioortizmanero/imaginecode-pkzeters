@@ -1,0 +1,10 @@
+{
+    "items": [
+        { 
+          "peras": 3,
+          "manzanas": 2
+        },
+        { "manzanas": 1 },
+        { "peras": 10 }
+    ]
+}
