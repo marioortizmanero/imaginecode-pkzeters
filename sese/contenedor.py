@@ -22,6 +22,10 @@ class Item:
 
 
 class Almacen:
+    """
+    Representa un conjunto de estanterías o pedidos.
+    """
+
     def leer(self, archivo: str) -> None:
         # Guarda los datos del JSON en el objeto
         with open(archivo, 'r') as archivo:
