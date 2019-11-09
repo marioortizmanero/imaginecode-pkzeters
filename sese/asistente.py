@@ -1,4 +1,5 @@
 import random
+from typing import Tuple
 
 from sese.contenedor import Tarea
 
@@ -19,6 +20,12 @@ class Asistente:
         self.interfaz_tareas = InterfazTareas()
         self.interfaz_msg_final = InterfazMsgFinal()
 
+        # Keywords para acciones especiales
+        self.keys_repite = ('repite', 'repetido', 'otra vez', 'qué?',
+                            'repítelo')
+        self.keys_siguiente = ('avanzar', 'terminado', 'hecho', 'acabado',
+                               'ya está', 'co')
+
         # Inicializacion del reconocimiento de voz
         self.recognizer = sr.Recognizer()
 
@@ -30,18 +37,32 @@ class Asistente:
         habla = Speech(mensaje, 'es')
         habla.play()
 
+    def buscar_keyword(self, reconocido: str, keywords: Tuple[str]) -> bool:
+        """
+        Comprueba si un keyword está en el texto ofrecido por el recognizer.
+        """
+
+        for palabra in reconocido.split():
+            for keyword in keywords:
+                if palabra == keyword:
+                    return True
+
+        return False
+
     def escuchar(self) -> None:
         with sr.Microphone() as fuente:
             audio = self.recognizer.listen(fuente)
 
         try:
             recognized = self.recognizer.recognize_google(
-                audio, language='es')
-            if recognized == "repite":
-                print("uwu")
-            if recognized == "acabado":
-                print("ouo")
+                audio, language='es-ES')
             print("PALABRA:", recognized)
+            if self.buscar_keyword(recognized, self.keys_repite):
+                print("Holiwi")
+                return
+            elif self.buscar_keyword(recognized, self.keys_siguiente):
+                print("Holiwi2")
+                return
         except sr.UnknownValueError:
             print("Could not understand audio")
         except sr.RequestError as e:
@@ -66,7 +87,7 @@ class Asistente:
         """
 
         self.hablar(self.interfaz_tareas.msg_aleatorio(
-            tarea.inicio, tarea.final, tarea.item.nombre,
+            tarea.inicio + 1, tarea.final + 1, tarea.item.nombre,
             tarea.item.cantidad))
 
 
@@ -122,7 +143,7 @@ class InterfazTareas(Interfaz):
         # ha dicho alguno anteriormente.
         self.msg_iniciales = (
             "Para comenzar, por favor mueva {3} {2} al pedido {1}, que"
-            " podrá recoger de la caja {0}.",
+            " podrá recoger de la caja número {0}.",
             "Bienvenido... Puede empezar por mover al pedido {1} {3} {2} de"
             " la caja número {0} del almacén."
         )
@@ -130,10 +151,10 @@ class InterfazTareas(Interfaz):
             "LLeve desde la caja número {0} al pedido número {1} {3} {2}.",
             "Coja {3} {2} de la caja número {0} y llévela a la entrega número"
             " {1}, por favor.",
-            "Por favor, mueva al pedido {1} {3} {2} de la caja número {0} del"
-            " almacén.",
-            "Su tarea consiste en coger {3} {2} de la caja {0} y depositarlas"
-            " en la entrega número {1}.",
+            "Por favor, mueva al pedido número {1} {3} {2} de la caja número"
+            " {0} del almacén.",
+            "Su tarea consiste en coger {3} {2} de la caja número {0} y"
+            " depositarlas en la entrega número {1}.",
             "Tendrá que mover de la caja número {0} del almacén {3} {2} a"
             " la número {1} de los pedidos."
         )
