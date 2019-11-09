@@ -1,4 +1,5 @@
 import random
+import logging
 from typing import Tuple
 
 from sese.contenedor import Tarea
@@ -19,13 +20,19 @@ class Asistente:
         # Inicializacion de las interfaces de voz del asistente
         self.interfaz_tareas = InterfazTareas()
         self.interfaz_msg_final = InterfazMsgFinal()
+        self.interfaz_repetir = InterfazRepetir()
 
-        # Keywords para acciones especiales
-        self.keys_repite = ('repite', 'repetido', 'otra', 'qué?',
-                            'repítelo')
+        # Keywords para acciones especiales. Este tipo de datos tendrían que
+        # situarse en archivos fuera del programa por comodidad, pero para
+        # su uso limitado actual no es necesario.
+        self.keys_repite = ('repite', 'repetido', 'otra', 'qué?', 'repetir',
+                            'repítelo', 'repítemelo')
         self.keys_siguiente = ('avanzar', 'terminado', 'hecho', 'acabado',
-                               'ya', 'está', 'finalizado', 'acabé', 'terminé',
-                               'finalicé')
+                               'ya', 'está', 'finalizado', 'acabé', 'acaba',
+                               'terminé', 'finalicé', 'continuar', 'seguir',
+                               'sigamos', 'continuemos', 'continúa',
+                               'proseguir', 'prosigamos', 'vale', 'okay',
+                               'ok', 'sigue')
 
         # Inicializacion del reconocimiento de voz
         self.recognizer = sr.Recognizer()
@@ -56,6 +63,7 @@ class Asistente:
         ella.
         """
 
+        logging.info("Se ha iniciado el bucle de una tarea.")
         while True:
             with sr.Microphone() as fuente:
                 audio = self.recognizer.listen(fuente)
@@ -63,17 +71,20 @@ class Asistente:
             try:
                 recognized = self.recognizer.recognize_google(
                     audio, language='es-ES')
-                print("PALABRA:", recognized)
+                logging.info(f"Audio reconocido: {recognized}")
                 if self.buscar_keyword(recognized, self.keys_repite):
                     # Repite la tarea y continúa el bucle esperando
+                    logging.info("Repitiendo la tarea")
+                    self.hablar_repetir()
                     self.hablar_tarea(tarea)
                 elif self.buscar_keyword(recognized, self.keys_siguiente):
+                    logging.info("Fin de la tarea")
                     # Si ya ha acabado se termina la función directamente
                     return
             except sr.UnknownValueError:
-                print("No se pudo entender el audio")
+                logging.info("No se pudo entender el audio")
             except sr.RequestError as e:
-                print(f"No se pudieron obtener resultados: {e}")
+                logging.info(f"No se pudieron obtener resultados: {e}")
 
     def hablar_msg_final(self) -> None:
         """
@@ -82,6 +93,14 @@ class Asistente:
         """
 
         self.hablar(self.interfaz_msg_final.msg_aleatorio())
+
+    def hablar_repetir(self) -> None:
+        """
+        Selecciona y dice un mensaje aleatorio corto para cuando tiene que
+        repetirse una tarea.
+        """
+
+        self.hablar(self.interfaz_repetir.msg_aleatorio())
 
     def hablar_tarea(self, tarea: Tarea) -> None:
         """
@@ -167,10 +186,43 @@ class InterfazTareas(Interfaz):
         )
 
 
+class InterfazRepetir(Interfaz):
+    def __init__(self) -> None:
+        """
+        Mensajes preestablecidos para cuando el asistente tiene que repetir
+        la tarea.
+        """
+
+        super().__init__()
+
+        self.mensajes = (
+            "Perdona, te repito la tarea...",
+            "Lo intentaré otra vez...",
+            "Disculpa, deja que te repita la tarea...",
+            "Está bien..."
+        )
+
+
+class InterfazIntro(Interfaz):
+    def __init__(self) -> None:
+        """
+        Mensajes preestablecidos para cuando el asistente tiene que repetir
+        la tarea.
+        """
+
+        super().__init__()
+
+        self.mensajes = (
+            "Perdona, te repito la tarea...",
+            "Si necesitas que te repita la tarea, por favor indícamelo con",
+        )
+
+
 class InterfazMsgFinal(Interfaz):
     def __init__(self) -> None:
         """
-        Mensajes preestablecidos.
+        Mensajes preestablecidos para un mensaje final después de haber
+        terminado la tarea.
         """
 
         super().__init__()
