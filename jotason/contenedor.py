@@ -112,34 +112,33 @@ class ArchivoTareas:
                 for item_disponible in estanteria:
                     # Se mueven los items del almacén requeridos a los del
                     # pedido.
-                    if item_pedido.nombre == item_disponible.nombre:
-                        if item_pedido.cantidad > 0:
-
-                            if item_pedido.cantidad > item_disponible.cantidad:
-                                # Si en el contendor no hay suficientes o estan
-                                # justas me llevo todo lo que puedo
-                                item_pedido.cantidad -= item_disponible.cantidad
-                                # Se añade una tarea nueva a la lista interna
-                                self.tareas.append(Tarea(i_estanteria, i_pedido,
-                                                         item_disponible.nombre,
-                                                         item_disponible.cantidad))
-                                item_disponible.cantidad = 0
-                                # Si ya no quedan pedidos, se termina la
-                                # iteración del item.
-                            elif item_pedido.cantidad == item_disponible.cantidad:
-                                self.tareas.append(Tarea(i_estanteria, i_pedido,
-                                                         item_disponible.nombre,
-                                                         item_disponible.cantidad))
-                                item_disponible.cantidad = 0;
-                                item_pedido.cantidad = 0;
-                                break
-                            else:
-                                self.tareas.append(Tarea(i_estanteria, i_pedido,
-                                                         item_pedido.nombre,
-                                                         item_pedido.cantidad))
-                                # En la estanteria hay de sobra para el pedido
-                                item_disponible.cantidad -= item_pedido.cantidad
-                                break
+                    if item_pedido.nombre == item_disponible.nombre \
+                            and item_pedido.cantidad > 0:
+                        if item_pedido.cantidad > item_disponible.cantidad:
+                            # Si en el contendor no hay suficientes o estan
+                            # justas me llevo todo lo que puedo
+                            item_pedido.cantidad -= item_disponible.cantidad
+                            # Se añade una tarea nueva a la lista interna
+                            self.tareas.append(Tarea(i_estanteria, i_pedido,
+                                                     item_disponible.nombre,
+                                                     item_disponible.cantidad))
+                            item_disponible.cantidad = 0
+                            # Si ya no quedan pedidos, se termina la
+                            # iteración del item.
+                        elif item_pedido.cantidad == item_disponible.cantidad:
+                            self.tareas.append(Tarea(i_estanteria, i_pedido,
+                                                     item_disponible.nombre,
+                                                     item_disponible.cantidad))
+                            item_disponible.cantidad = 0;
+                            item_pedido.cantidad = 0;
+                            break
+                        else:
+                            self.tareas.append(Tarea(i_estanteria, i_pedido,
+                                                     item_pedido.nombre,
+                                                     item_pedido.cantidad))
+                            # En la estanteria hay de sobra para el pedido
+                            item_disponible.cantidad -= item_pedido.cantidad
+                            break
                             
     def escribir(self, archivo: str) -> None:
         """
