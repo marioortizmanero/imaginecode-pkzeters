@@ -76,8 +76,12 @@ class Asistente:
         # Inicializacion de las interfaces de voz del asistente
         self.interfaz_tareas = Interfaz(
             'tareas_mensajes.txt', archivo_iniciales='tareas_iniciales.txt')
+        self.interfaz_intro = Interfaz('intro.txt')
         self.interfaz_final = Interfaz('final.txt')
         self.interfaz_repetir = Interfaz('repetir.txt')
+        self.interfaz_pedir_archivos = Interfaz('pedir_archivos.txt')
+        self.interfaz_despedir = Interfaz('despedir.txt')
+        self.interfaz_entender = Interfaz('entender.txt')
 
         # Keywords para acciones especiales. Este tipo de datos tendrían que
         # situarse en archivos fuera del programa por comodidad, pero para
@@ -94,7 +98,7 @@ class Asistente:
         # Inicializacion del reconocimiento de voz
         self.recognizer = sr.Recognizer()
 
-    def hablar(self, mensaje: str) -> None:
+    def _hablar(self, mensaje: str) -> None:
         """
         Usa Google Speech para hablar al usuario con una frase aleatoria.
         """
@@ -132,7 +136,7 @@ class Asistente:
                 if self.buscar_keyword(recognized, self.keys_repite):
                     # Repite la tarea y continúa el bucle esperando
                     logging.info("Repitiendo la tarea")
-                    self.hablar_basico(self.interfaz_repetir)
+                    self.hablar(self.interfaz_repetir)
                     self.hablar_tarea(tarea)
                 elif self.buscar_keyword(recognized, self.keys_siguiente):
                     logging.info("Fin de la tarea")
@@ -140,16 +144,17 @@ class Asistente:
                     return
             except sr.UnknownValueError:
                 logging.info("No se pudo entender el audio")
+                self.hablar(self.interfaz_entender)
             except sr.RequestError as e:
                 logging.info(f"No se pudieron obtener resultados: {e}")
 
-    def hablar_basico(self, interfaz: Interfaz) -> None:
+    def hablar(self, interfaz: Interfaz) -> None:
         """
         Selecciona y dice un mensaje aleatorio corto a partir de una interfaz
         sin formato necesario.
         """
 
-        self.hablar(interfaz.msg_aleatorio())
+        self._hablar(interfaz.msg_aleatorio())
 
     def hablar_tarea(self, tarea: Tarea) -> None:
         """
@@ -161,6 +166,6 @@ class Asistente:
             * 3: tarea.item.cantidad
         """
 
-        self.hablar(self.interfaz_tareas.msg_aleatorio(
+        self._hablar(self.interfaz_tareas.msg_aleatorio(
             tarea.inicio + 1, tarea.final + 1, tarea.item.nombre,
             tarea.item.cantidad))

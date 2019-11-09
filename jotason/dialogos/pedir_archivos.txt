@@ -1,0 +1,2 @@
+Ya has terminado este trabajo! Ahora puedes insertar en la consola un nuevo archivo de almacén o un nuevo archivo de pedidos. Puedes presionar Control + C para salir del programa.
+Muy bien, eso es todo. Por favor inserta en el programa el nombre de un archivo de almacén o de pedidos. Si ya has acabado, puedes presionar Control + C para salir.

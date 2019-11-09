@@ -1,0 +1,2 @@
+Hola, soy Jotasón, tu asistente personal para este trabajo. A partir de los datos que he recibido, generaré unas tareas y te las diré una a una. Puedes pedirme que repita la tarea o decirme que continúe con la siguiente.
+Encantado de conocerte, yo me llamo Jotasón. Voy a ir guiándote para que hagas las tareas generadas en base a los datos que he recibido. Si no me entendiste correctamente, puedes pedirme que repita la tarea. Cuando hayas terminado, indícamelo para continuar a la siguiente.
