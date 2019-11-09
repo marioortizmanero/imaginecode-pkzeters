@@ -1,0 +1,2 @@
+Para comenzar, por favor mueva {3} {2} al pedido {1}, que podrá recoger de la caja número {0}.
+Bienvenido... Puede empezar por mover al pedido {1} {3} {2} de la caja número {0} del almacén.

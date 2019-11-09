@@ -10,6 +10,62 @@ import speech_recognition as sr
 from google_speech import Speech
 
 
+class Interfaz:
+    """
+    Una interfaz es un módulo del asistente que contiene frases
+    predeterminadas de un tipo que se escogerán de forma pseudo-aleatoria.
+    Los diferentes mensajes se crearán en __init__ y se accederá al
+    mensaje aleatorio con msg_aleatorio(), que puede re-implementarse
+    en caso de tener una generación de mensajes diferente.
+
+    Los mensajes se leerán de un archivo pasado por parámetro, siendo los
+    iniciales opcionales.
+    """
+    def __init__(self, archivo_mensajes: str,
+                 archivo_iniciales: str = None) -> None:
+        # Aquí deberían ir los mensajes usados en la interfaz.
+        self.mensajes = self.leer_mensajes(archivo_mensajes)
+        if archivo_iniciales is not None:
+            self.msg_iniciales = self.leer_mensajes(archivo_iniciales)
+        else:
+            self.msg_iniciales = []
+
+        # Se guarda el ultimo mensaje para que no se repita
+        self.msg_anterior = ''
+
+        # El contador para saber los mensajes ya dichos
+        self.num = 0
+
+    def leer_mensajes(self, archivo: str) -> Tuple[str]:
+        """
+        Leer los mensajes de un archivo especial para almacenarlos.
+        Tienen una sintaxis simple: cada mensaje es una línea nueva.
+        El archivo sólo tiene su nombre dentro de sese/dialogos/.
+        """
+
+        with open(f"sese/dialogos/{archivo}", 'r') as f:
+            mensajes = f.readlines()
+        # Elimina espacios extra y los saltos de línea
+        mensajes = [x.strip().rstrip('\n') for x in mensajes]
+
+        return mensajes
+
+    def msg_aleatorio(self, *format_args: any) -> str:
+        """
+        Genera un texto aleatorio de forma que no se repita el mismo
+        dos veces seguidas. Muestra un mensaje distinto cuando es el primero.
+        """
+
+        if self.num == 0 and len(self.msg_iniciales) > 0:
+            self.msg_anterior = random.choice(self.msg_iniciales)
+        else:
+            self.msg_anterior = random.choice([m for m in self.mensajes
+                                               if m != self.msg_anterior])
+        self.num += 1
+        return self.msg_anterior if len(format_args) == 0 \
+            else self.msg_anterior.format(*format_args)
+
+
 class Asistente:
     """
     Esta clase genera los mensajes aleatorios para las instrucciones
@@ -18,9 +74,10 @@ class Asistente:
 
     def __init__(self) -> None:
         # Inicializacion de las interfaces de voz del asistente
-        self.interfaz_tareas = InterfazTareas()
-        self.interfaz_msg_final = InterfazMsgFinal()
-        self.interfaz_repetir = InterfazRepetir()
+        self.interfaz_tareas = Interfaz(
+            'tareas_mensajes.txt', archivo_iniciales='tareas_iniciales.txt')
+        self.interfaz_final = Interfaz('final.txt')
+        self.interfaz_repetir = Interfaz('repetir.txt')
 
         # Keywords para acciones especiales. Este tipo de datos tendrían que
         # situarse en archivos fuera del programa por comodidad, pero para
@@ -75,7 +132,7 @@ class Asistente:
                 if self.buscar_keyword(recognized, self.keys_repite):
                     # Repite la tarea y continúa el bucle esperando
                     logging.info("Repitiendo la tarea")
-                    self.hablar_repetir()
+                    self.hablar_basico(self.interfaz_repetir)
                     self.hablar_tarea(tarea)
                 elif self.buscar_keyword(recognized, self.keys_siguiente):
                     logging.info("Fin de la tarea")
@@ -86,21 +143,13 @@ class Asistente:
             except sr.RequestError as e:
                 logging.info(f"No se pudieron obtener resultados: {e}")
 
-    def hablar_msg_final(self) -> None:
+    def hablar_basico(self, interfaz: Interfaz) -> None:
         """
-        Selecciona y dice un mensaje aleatorio corto para finalizar una
-        tarea.
-        """
-
-        self.hablar(self.interfaz_msg_final.msg_aleatorio())
-
-    def hablar_repetir(self) -> None:
-        """
-        Selecciona y dice un mensaje aleatorio corto para cuando tiene que
-        repetirse una tarea.
+        Selecciona y dice un mensaje aleatorio corto a partir de una interfaz
+        sin formato necesario.
         """
 
-        self.hablar(self.interfaz_repetir.msg_aleatorio())
+        self.hablar(interfaz.msg_aleatorio())
 
     def hablar_tarea(self, tarea: Tarea) -> None:
         """
@@ -115,122 +164,3 @@ class Asistente:
         self.hablar(self.interfaz_tareas.msg_aleatorio(
             tarea.inicio + 1, tarea.final + 1, tarea.item.nombre,
             tarea.item.cantidad))
-
-
-class Interfaz:
-    """
-    Una interfaz es un módulo del asistente que contiene frases
-    predeterminadas de un tipo que se escogerán de forma pseudo-aleatoria.
-    Los diferentes mensajes se crearán en __init__ y se accederá al
-    mensaje aleatorio con msg_aleatorio(), que puede re-implementarse
-    en caso de tener una generación de mensajes diferente.
-    """
-    def __init__(self) -> None:
-        # Aquí deberían ir los mensajes usados en la interfaz.
-        self.msg_iniciales = ()
-        self.mensajes = ()
-
-        # Se guarda el ultimo mensaje para que no se repita
-        self.msg_anterior = ''
-
-        # El contador para saber los mensajes ya dichos
-        self.num = 0
-
-    def msg_aleatorio(self, *format_args: any) -> str:
-        """
-        Genera un texto aleatorio de forma que no se repita el mismo
-        dos veces seguidas. Muestra un mensaje distinto cuando es el primero.
-        """
-
-        if self.num == 0 and len(self.msg_iniciales) > 0:
-            self.msg_anterior = random.choice(self.msg_iniciales)
-        else:
-            self.msg_anterior = random.choice([m for m in self.mensajes
-                                               if m != self.msg_anterior])
-        self.num += 1
-        return self.msg_anterior if len(format_args) == 0 \
-            else self.msg_anterior.format(*format_args)
-
-
-class InterfazTareas(Interfaz):
-    def __init__(self) -> None:
-        """
-        Mensajes preestablecidos, con orden de formato:
-            * 0: tarea.inicio
-            * 1: tarea.final
-            * 2: tarea.item.nombre
-            * 3: tarea.item.cantidad
-        """
-
-        super().__init__()
-
-        # Tiene diferentes frases dependiendo del número de mensajes ya
-        # reproducidos. Unos para cuando empieza, y otros para cuando ya
-        # ha dicho alguno anteriormente.
-        self.msg_iniciales = (
-            "Para comenzar, por favor mueva {3} {2} al pedido {1}, que"
-            " podrá recoger de la caja número {0}.",
-            "Bienvenido... Puede empezar por mover al pedido {1} {3} {2} de"
-            " la caja número {0} del almacén."
-        )
-        self.mensajes = (
-            "LLeve desde la caja número {0} al pedido número {1} {3} {2}.",
-            "Coja {3} {2} de la caja número {0} y llévela a la entrega número"
-            " {1}, por favor.",
-            "Por favor, mueva al pedido número {1} {3} {2} de la caja número"
-            " {0} del almacén.",
-            "Su tarea consiste en coger {3} {2} de la caja número {0} y"
-            " depositarlas en la entrega número {1}.",
-            "Tendrá que mover de la caja número {0} del almacén {3} {2} a"
-            " la número {1} de los pedidos."
-        )
-
-
-class InterfazRepetir(Interfaz):
-    def __init__(self) -> None:
-        """
-        Mensajes preestablecidos para cuando el asistente tiene que repetir
-        la tarea.
-        """
-
-        super().__init__()
-
-        self.mensajes = (
-            "Perdona, te repito la tarea...",
-            "Lo intentaré otra vez...",
-            "Disculpa, deja que te repita la tarea...",
-            "Está bien..."
-        )
-
-
-class InterfazIntro(Interfaz):
-    def __init__(self) -> None:
-        """
-        Mensajes preestablecidos para cuando el asistente tiene que repetir
-        la tarea.
-        """
-
-        super().__init__()
-
-        self.mensajes = (
-            "Perdona, te repito la tarea...",
-            "Si necesitas que te repita la tarea, por favor indícamelo con",
-        )
-
-
-class InterfazMsgFinal(Interfaz):
-    def __init__(self) -> None:
-        """
-        Mensajes preestablecidos para un mensaje final después de haber
-        terminado la tarea.
-        """
-
-        super().__init__()
-
-        self.mensajes = (
-            "Muchas gracias!",
-            "Gracias",
-            "Continuemos",
-            "A por el siguiente...",
-            "Buen trabajo"
-        )
