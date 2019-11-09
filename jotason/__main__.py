@@ -57,11 +57,18 @@ def loop_asistente(config: dict):
             asistente.escuchar(tarea)
             asistente.hablar(asistente.interfaz_final)
 
+        # Se guarda el almacén en el archivo final
+        almacen.escribir(config.archivo_final)
+        # El asistente pide los archivos nuevos para continuar el programa
         asistente.hablar(asistente.interfaz_pedir_archivos)
         try:
-            i = input("Introduzca xxxxx:")
+            print("Introduzca un archivo de almacén: ", end='')
+            archivo_almacen = input()
+            print("Introduzca un archivo de pedidos: ", end='')
+            archivo_pedidos = input()
         except KeyboardInterrupt:
             asistente.hablar(asistente.interfaz_despedir)
+            print()
             break
 
 

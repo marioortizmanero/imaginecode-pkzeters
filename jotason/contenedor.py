@@ -26,18 +26,14 @@ class Almacen:
     Representa un conjunto de estanterías o pedidos.
     """
     def escribir(self, archivo_final_almacen)->None:
-        formato=dict()
-        formato['almacen']=[]
+        formato = dict()
+        formato['almacen'] = []
         for estanteria in self.estanterias:
             for item in estanteria:
-                if item.cantidad >0:
-                formato['almacen'].append({item.nombre: item.cantidad})
+                if item.cantidad > 0:
+                    formato['almacen'].append({item.nombre: item.cantidad})
         with open(archivo_final_almacen, 'w') as archivo_almacen:
             json.dump(formato, archivo_almacen)
-
-        
-
-
 
     def leer(self, archivo: str) -> None:
         # Guarda los datos del JSON en el objeto
