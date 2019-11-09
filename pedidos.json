@@ -1,10 +1,13 @@
 {
     "items": [
         { 
-          "peras": 3,
-          "manzanas": 2
+          "papeles": 3,
+          "bolis": 1
         },
-        { "manzanas": 1 },
-        { "peras": 10 }
+        { "cantimploras": 2,
+          "vasos": 4 },
+        { "vasos": 2,
+          "bolis": 1,
+          "papeles": 1 }
     ]
 }

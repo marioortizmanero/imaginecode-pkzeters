@@ -1,4 +1,4 @@
-LLeve desde la caja número {0} al pedido número {1} {3} {2}.
+Lleve desde la caja número {0} al pedido número {1} {3} {2}.
 Coja {3} {2} de la caja número {0} y llévela a la entrega número {1}, por favor.
 Por favor, mueva al pedido número {1} {3} {2} de la caja número {0} del almacén.
 Su tarea consiste en coger {3} {2} de la caja número {0} y depositarlas en la entrega número {1}.

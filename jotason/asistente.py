@@ -10,6 +10,21 @@ import speech_recognition as sr
 from google_speech import Speech
 
 
+def leer_dialogo(archivo: str) -> Tuple[str]:
+    """
+    Lee los mensajes de un archivo especial para almacenarlos.
+    Tienen una sintaxis simple: cada mensaje es una línea nueva.
+    El archivo sólo tiene su nombre dentro de jotason/dialogos/.
+    """
+
+    with open(f"jotason/dialogos/{archivo}", 'r') as f:
+        dialogo = f.readlines()
+    # Elimina espacios extra y los saltos de línea
+    dialogo = [x.strip().rstrip('\n') for x in dialogo if x != '\n']
+
+    return dialogo
+
+
 class Interfaz:
     """
     Una interfaz es un módulo del asistente que contiene frases
@@ -24,9 +39,9 @@ class Interfaz:
     def __init__(self, archivo_mensajes: str,
                  archivo_iniciales: str = None) -> None:
         # Aquí deberían ir los mensajes usados en la interfaz.
-        self.mensajes = self.leer_mensajes(archivo_mensajes)
+        self.mensajes = leer_dialogo(archivo_mensajes)
         if archivo_iniciales is not None:
-            self.msg_iniciales = self.leer_mensajes(archivo_iniciales)
+            self.msg_iniciales = leer_dialogo(archivo_iniciales)
         else:
             self.msg_iniciales = []
 
@@ -35,20 +50,6 @@ class Interfaz:
 
         # El contador para saber los mensajes ya dichos
         self.num = 0
-
-    def leer_mensajes(self, archivo: str) -> Tuple[str]:
-        """
-        Leer los mensajes de un archivo especial para almacenarlos.
-        Tienen una sintaxis simple: cada mensaje es una línea nueva.
-        El archivo sólo tiene su nombre dentro de jotason/dialogos/.
-        """
-
-        with open(f"jotason/dialogos/{archivo}", 'r') as f:
-            mensajes = f.readlines()
-        # Elimina espacios extra y los saltos de línea
-        mensajes = [x.strip().rstrip('\n') for x in mensajes]
-
-        return mensajes
 
     def msg_aleatorio(self, *format_args: any) -> str:
         """
@@ -86,14 +87,8 @@ class Asistente:
         # Keywords para acciones especiales. Este tipo de datos tendrían que
         # situarse en archivos fuera del programa por comodidad, pero para
         # su uso limitado actual no es necesario.
-        self.keys_repite = ('repite', 'repetido', 'otra', 'qué?', 'repetir',
-                            'repítelo', 'repítemelo')
-        self.keys_siguiente = ('avanzar', 'terminado', 'hecho', 'acabado',
-                               'ya', 'está', 'finalizado', 'acabé', 'acaba',
-                               'terminé', 'finalicé', 'continuar', 'seguir',
-                               'sigamos', 'continuemos', 'continúa',
-                               'proseguir', 'prosigamos', 'vale', 'okay',
-                               'ok', 'sigue')
+        self.keys_repite = leer_dialogo('keys_repite.txt')
+        self.keys_siguiente = leer_dialogo('keys_siguiente.txt')
 
         # Inicializacion del reconocimiento de voz
         self.recognizer = sr.Recognizer()
