@@ -56,19 +56,34 @@ class Tarea:
         self.item = item
 
 
-class ArchivoTarea:
+class ArchivoTareas:
     def __init__(self):
         self.tareas = []
 
     def __iter__(self):
         for tarea in self.tareas:
             yield tarea
+    
+    def es_posible(self, almacen: Almacen, pedido: Tuple[Item]):
+        for item in pedido:
+            contador = 0
+            for estanteria in almacen:
+                for item_disponible in estanteria:
+                    if item_disponible.nombre == item.nombre:
+                        contador += item_disponible.cantidad
+            if contador < item.cantidad:
+                return False
 
-    def generar_tareas(self, almacen: Almacen, pedido: Tuple[Item]):
+        return True
+
+    def generar_tareas(self, almacen: Almacen, pedido: Tuple[Item], i_pedido: int) -> None:
+        if not self.es_posible(almacen, pedido):
+            raise NoHayItems(f"No se pudo completar el pedido: {pedido}")
+
         # Itera cada item del pedido
         for item_pedido in pedido:
             # Los busca en todos los items del almacén
-            for estanteria in almacen:
+            for i_estanteria, estanteria in enumerate(almacen):
                 for item_disponible in estanteria:
                     # Se mueven los items del almacén requeridos a los del
                     # pedido.
@@ -77,12 +92,19 @@ class ArchivoTarea:
                             # Si en el contendor no hay suficientes o estan
                             # justas me llevo todo lo que puedo
                             item_pedido.cantidad -= item_disponible.cantidad
+                            # Se añade una tarea nueva a la lista interna
+                            self.tareas.append(Tarea(i_estanteria,
+                                                     i_pedido,
+                                                     item_disponible.cantidad))
                             item_disponible.cantidad = 0
                             # Si ya no quedan pedidos, se termina la
                             # iteración del item.
                             if item_pedido.cantidad == 0:
                                 break
                         else:
+                            self.tareas.append(Tarea(i_estanteria,
+                                                     i_pedido,
+                                                     item_pedido.cantidad))
                             # En la estanteria hay de sobra para el pedido
                             item_disponible.cantidad -= item_pedido.cantidad
                             break
