@@ -2,6 +2,25 @@ from typing import Tuple
 import json
 
 
+class NoHayItems(Exception):
+    """
+    Excepción usada para indicar que el almacén no tiene los suficientes
+    items para completar un pedido.
+    """
+
+    def __init__(self, msg: str) -> None:
+        super().__init__(self, msg)
+
+
+class Item:
+    def __init__(self, nombre: str, cantidad: int) -> None:
+        self.nombre = nombre
+        self.cantidad = cantidad
+
+    def __str__(self) -> str:
+        return f'{self.nombre}: {self.cantidad}'
+
+
 class Almacen:
     def leer(self, archivo: str) -> None:
         # Guarda los datos del JSON en el objeto
@@ -16,31 +35,36 @@ class Almacen:
                 items.append(Item(nombre, cantidad))
             self.estanterias.append(items)
 
-    def __iter__(self):
+    def __iter__(self) -> Tuple[Tuple[Item]]:
         # Para iterar cada estanteria del contenedor
         for estanteria in self.estanterias:
             yield estanteria
 
-
-class Item:
-    def __init__(self, nombre: str, cantidad: int) -> None:
-        self.nombre = nombre
-        self.cantidad = cantidad
-
     def __str__(self) -> str:
-        return f'{self.nombre}: {self.cantidad}'
-
-
-class NoHayItems(Exception):
-    def __init__(self, msg: str) -> None:
-        super().__init__(self, msg)
+        s = "################\n"
+        for estanteria in self.estanterias:
+            for item in estanteria:
+                s += f'# {item}\n'
+            s += "################\n"
+        return s
 
 
 class Tarea:
-    def __init__(self, almacen: Almacen, pedido: Tuple[Item]):
-        if not self.se_puede(almacen, pedido):
-            raise NoHayItems('No se puede hacer el pedido: {pedido}')
+    def __init__(self, inicio: int, final: int, item: Item):
+        self.inicio = inicio
+        self.final = final
+        self.item = item
 
+
+class ArchivoTarea:
+    def __init__(self):
+        self.tareas = []
+
+    def __iter__(self):
+        for tarea in self.tareas:
+            yield tarea
+
+    def generar_tareas(self, almacen: Almacen, pedido: Tuple[Item]):
         # Itera cada item del pedido
         for item_pedido in pedido:
             # Los busca en todos los items del almacén
@@ -48,37 +72,30 @@ class Tarea:
                 for item_disponible in estanteria:
                     # Se mueven los items del almacén requeridos a los del
                     # pedido.
-                    if item_disponible.nombre == item_pedido.nombre:
-                        if item_pedido.cantidad >= item_disponible.cantidad: 
-                            #si en el contendor no hay suficientes o estan justas
-                            #me llevo todo lo que puedo
+                    if item_pedido.nombre == item_disponible.nombre:
+                        if item_pedido.cantidad >= item_disponible.cantidad:
+                            # Si en el contendor no hay suficientes o estan
+                            # justas me llevo todo lo que puedo
                             item_pedido.cantidad -= item_disponible.cantidad
-                            del item_disponible
+                            item_disponible.cantidad = 0
+                            # Si ya no quedan pedidos, se termina la
+                            # iteración del item.
                             if item_pedido.cantidad == 0:
-                                #si estaban justas dejo de buscar
-                                del item_pedido
-                                break                        
-
-                        else :
-                            #en la estanteria hay de sobra para el pedido
+                                break
+                        else:
+                            # En la estanteria hay de sobra para el pedido
                             item_disponible.cantidad -= item_pedido.cantidad
-                            del item_pedido
-                            #disminuimos la cantidad en el almacen y eliminamos el item del pedido
                             break
 
+    def escribir(self, archivo: str) -> None:
+        """
+        Se escribe el JSON correctamente, siguiendo el mismo formato usado
+        para el almacén y los pedidos.
+        """
 
-
-
-
-
-    def se_puede(self, almacen: Almacen, pedido: Tuple[Item]):
-        for item in pedido:
-            contador = 0
-            for estanteria in almacen:
-                for item_disponible in estanteria:
-                    if item_disponible.nombre == item.nombre:
-                        contador += item_disponible.cantidad
-            if contador < item.cantidad:
-                return False
-
-        return True
+        formato = dict()
+        formato['tareas'] = []
+        for tarea in self.tareas:
+            formato['tareas'].append(tarea)
+        with open(archivo, 'w') as archivo_tareas:
+            json.dump(formato, archivo_tareas)

@@ -21,11 +21,6 @@ def main():
         except NoHayItems as e:
             print(e)
 
-    for estanteria in almacen:
-        for item in estanteria:
-            print(item)
-        print("---")
-
 
 if __name__ == '__main__':
     main()
