@@ -129,8 +129,8 @@ class ArchivoTareas:
                             self.tareas.append(Tarea(i_estanteria, i_pedido,
                                                      item_disponible.nombre,
                                                      item_disponible.cantidad))
-                            item_disponible.cantidad = 0;
-                            item_pedido.cantidad = 0;
+                            item_disponible.cantidad = 0
+                            item_pedido.cantidad = 0
                             break
                         else:
                             self.tareas.append(Tarea(i_estanteria, i_pedido,
@@ -139,7 +139,7 @@ class ArchivoTareas:
                             # En la estanteria hay de sobra para el pedido
                             item_disponible.cantidad -= item_pedido.cantidad
                             break
-                            
+
     def escribir(self, archivo: str) -> None:
         """
         Se escribe el JSON correctamente, siguiendo el mismo formato usado
