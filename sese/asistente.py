@@ -2,6 +2,9 @@ import random
 
 from sese.contenedor import Tarea
 
+# Reconocimiento de voz
+import speech_recognition as sr
+# Sintetizador de voz
 from google_speech import Speech
 
 
@@ -12,8 +15,12 @@ class Asistente:
     """
 
     def __init__(self) -> None:
+        # Inicializacion de las interfaces de voz del asistente
         self.interfaz_tareas = InterfazTareas()
         self.interfaz_msg_final = InterfazMsgFinal()
+
+        # Inicializacion del reconocimiento de voz
+        self.recognizer = sr.Recognizer()
 
     def hablar(self, mensaje: str) -> None:
         """
@@ -23,7 +30,24 @@ class Asistente:
         habla = Speech(mensaje, 'es')
         habla.play()
 
-    def hablar_msg_final(self):
+    def escuchar(self) -> None:
+        with sr.Microphone() as fuente:
+            audio = self.recognizer.listen(fuente)
+
+        try:
+            recognized = self.recognizer.recognize_google(
+                audio, language='es')
+            if recognized == "repite":
+                print("uwu")
+            if recognized == "acabado":
+                print("ouo")
+            print("PALABRA:", recognized)
+        except sr.UnknownValueError:
+            print("Could not understand audio")
+        except sr.RequestError as e:
+            print("Could not request results; {0}".format(e))
+
+    def hablar_msg_final(self) -> None:
         """
         Selecciona y dice un mensaje aleatorio corto para finalizar una
         tarea.
@@ -31,7 +55,7 @@ class Asistente:
 
         self.hablar(self.interfaz_msg_final.msg_aleatorio())
 
-    def hablar_tarea(self, tarea: Tarea):
+    def hablar_tarea(self, tarea: Tarea) -> None:
         """
         Usa la interfaz de tareas para escoger y decir uno de sus mensajes.
         Mensajes preestablecidos, con orden de formato:
@@ -65,7 +89,7 @@ class Interfaz:
         # El contador para saber los mensajes ya dichos
         self.num = 0
 
-    def msg_aleatorio(self, *format_args: any):
+    def msg_aleatorio(self, *format_args: any) -> str:
         """
         Genera un texto aleatorio de forma que no se repita el mismo
         dos veces seguidas. Muestra un mensaje distinto cuando es el primero.
