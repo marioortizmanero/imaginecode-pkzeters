@@ -21,7 +21,7 @@ def main():
         except NoHayItems as e:
             print(e)
 
-    #tareas.escribir(ARCHIVO_TAREAS)
+    tareas.escribir(ARCHIVO_TAREAS)
 
 
 if __name__ == '__main__':

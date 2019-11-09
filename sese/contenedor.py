@@ -50,21 +50,28 @@ class Almacen:
 
 
 class Tarea:
-    def __init__(self, inicio: int, final: int, item: Item):
+    def __init__(self, inicio: int, final: int, nombre: str,
+                 cantidad: int) -> None:
         self.inicio = inicio
         self.final = final
-        self.item = item
+        # El item tiene que ser una copia para que no se modifique antes
+        # de escribir el archivo.
+        self.item = Item(nombre, cantidad)
+
+    def __str__(self) -> str:
+        return f"LLevar {self.item.cantidad} {self.item.nombre} desde la" \
+               f" estantería {self.inicio} hasta {self.final}."
 
 
 class ArchivoTareas:
-    def __init__(self):
+    def __init__(self) -> None:
         self.tareas = []
 
-    def __iter__(self):
+    def __iter__(self) -> Tarea:
         for tarea in self.tareas:
             yield tarea
-    
-    def es_posible(self, almacen: Almacen, pedido: Tuple[Item]):
+
+    def es_posible(self, almacen: Almacen, pedido: Tuple[Item]) -> bool:
         for item in pedido:
             contador = 0
             for estanteria in almacen:
@@ -76,7 +83,8 @@ class ArchivoTareas:
 
         return True
 
-    def generar_tareas(self, almacen: Almacen, pedido: Tuple[Item], i_pedido: int) -> None:
+    def generar_tareas(self, almacen: Almacen, pedido: Tuple[Item],
+                       i_pedido: int) -> None:
         if not self.es_posible(almacen, pedido):
             raise NoHayItems(f"No se pudo completar el pedido: {pedido}")
 
@@ -93,8 +101,8 @@ class ArchivoTareas:
                             # justas me llevo todo lo que puedo
                             item_pedido.cantidad -= item_disponible.cantidad
                             # Se añade una tarea nueva a la lista interna
-                            self.tareas.append(Tarea(i_estanteria,
-                                                     i_pedido,
+                            self.tareas.append(Tarea(i_estanteria, i_pedido,
+                                                     item_disponible.nombre,
                                                      item_disponible.cantidad))
                             item_disponible.cantidad = 0
                             # Si ya no quedan pedidos, se termina la
@@ -102,8 +110,8 @@ class ArchivoTareas:
                             if item_pedido.cantidad == 0:
                                 break
                         else:
-                            self.tareas.append(Tarea(i_estanteria,
-                                                     i_pedido,
+                            self.tareas.append(Tarea(i_estanteria, i_pedido,
+                                                     item_pedido.nombre,
                                                      item_pedido.cantidad))
                             # En la estanteria hay de sobra para el pedido
                             item_disponible.cantidad -= item_pedido.cantidad
@@ -118,6 +126,13 @@ class ArchivoTareas:
         formato = dict()
         formato['tareas'] = []
         for tarea in self.tareas:
-            formato['tareas'].append(tarea)
+            formato['tareas'].append({
+                'inicio': tarea.inicio,
+                'final': tarea.final,
+                'item': {
+                    'nombre': tarea.item.nombre,
+                    'cantidad': tarea.item.cantidad
+                }
+            })
         with open(archivo, 'w') as archivo_tareas:
             json.dump(formato, archivo_tareas)

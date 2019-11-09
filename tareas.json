@@ -1,1 +1,1 @@
-{"tareas": [
+{"tareas": [{"inicio": 0, "final": 0, "item": {"nombre": "peras", "cantidad": 3}}, {"inicio": 1, "final": 0, "item": {"nombre": "manzanas", "cantidad": 2}}]}
