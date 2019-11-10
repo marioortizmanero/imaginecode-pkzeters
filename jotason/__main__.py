@@ -25,11 +25,14 @@ def loop_asistente(config: dict):
     asistente.hablar(asistente.interfaz_intro)
 
     while True:
-        # Genera los contenidos del almacén a partir del JSON
-        almacen.leer(config.archivo_almacen)
-
-        # Genera los pedidos a partir del archivo JSON
-        pedidos.leer(config.archivo_pedidos)
+        try:
+            # Genera los contenidos del almacén a partir del JSON
+            almacen.leer(config.archivo_almacen)
+            # Genera los pedidos a partir del archivo JSON
+            pedidos.leer(config.archivo_pedidos)
+        except FileNotFoundError:
+            asistente.hablar(asistente.interfaz_archivonoencontrado)
+            break
 
         # Genera las tareas usando el almacén y los pedidos
         logging.info("Generando tareas a partir de los datos del almacén y de"

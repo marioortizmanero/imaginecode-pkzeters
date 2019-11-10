@@ -1,0 +1,3 @@
+Lo siento, pero el archivo que pusiste no existe.
+Archivo no encontrado, inténtalo de nuevo.
+Se ha producido un error al intentar abrir el archivo.

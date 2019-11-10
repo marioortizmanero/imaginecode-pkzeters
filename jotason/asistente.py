@@ -83,6 +83,7 @@ class Asistente:
         self.interfaz_pedir_archivos = Interfaz('pedir_archivos.txt')
         self.interfaz_despedir = Interfaz('despedir.txt')
         self.interfaz_entender = Interfaz('entender.txt')
+        self.interfaz_archivonoencontrado = Interfaz('archivonoencontrado.txt')
 
         # Keywords para acciones especiales. Este tipo de datos tendrían que
         # situarse en archivos fuera del programa por comodidad, pero para

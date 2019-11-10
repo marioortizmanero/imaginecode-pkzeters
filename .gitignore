@@ -9,6 +9,10 @@ __pycache__/
 # Others
 .vim
 .vim/
+bin/
+share/
+pyvenv.cfg
+lib64
 
 # Distribution / packaging
 .Python
