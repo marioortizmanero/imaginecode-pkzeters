@@ -128,7 +128,7 @@ class Asistente:
                     # Calibra el ruido del micrófono sólo la primera vez
                     self.recognizer.adjust_for_ambient_noise(fuente)
                     calibrado = True
-                audio = self.recognizer.listen(fuente, timeout=5)
+                audio = self.recognizer.listen(fuente)
 
             try:
                 recognized = self.recognizer.recognize_google(
