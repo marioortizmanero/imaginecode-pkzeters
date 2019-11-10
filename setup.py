@@ -7,11 +7,12 @@ setup(
     packages=find_packages(),
     python_requires='>=3.6',
     install_requires=[
-        # System dependencies:
-        # * sox
-        # * libsox-fmt-mp3
-        # * python3-dev
-        # * libasound2-dev portaudio19-dev libportaudio2 libportaudiocpp0
+        # System dependencies
+        # Ubuntu:
+        #     sox libsox-fmt-mp3 python3-dev libasound2-dev portaudio19-dev
+        #     libportaudio2 libportaudiocpp0
+        # Arch Linux:
+        #    sox twolame portaudio
         'google_speech',
         'SpeechRecognition',
         'pyaudio'
